@@ -14,7 +14,8 @@ func (r *dbSelect) buildFrom() string {
 }
 
 func (r *dbSelect) buildWhere() string {
-	return ""
+	var where string
+	return where
 }
 
 func (r *dbSelect) buildOrder() string {
@@ -26,9 +27,32 @@ func (r *dbSelect) buildOrder() string {
 }
 
 func (r *dbSelect) buildJoin() string {
-	return ""
+	var join string
+
+	if len(r.join) == 0 {
+		return ""
+	}
+
+	for _, item := range r.join {
+		join += fmt.Sprintf(" %s JOIN %s ON %s", item.joinType, item.join, item.on)
+	}
+
+	return join
 }
 
 func (r *dbSelect) buildLimit() string {
-	return ""
+	var (
+		limit  string
+		offset string
+	)
+
+	if r.limit.offset != nil {
+		offset = fmt.Sprintf(" OFFSET %d", *r.limit.offset)
+	}
+
+	if r.limit.limit > 0 {
+		limit = fmt.Sprintf(" LIMIT %d", r.limit.limit)
+	}
+
+	return fmt.Sprintf("%s%s", offset, limit)
 }
